@@ -6,32 +6,64 @@ import Checkbox from './Checkbox'
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
-    flexDirection: 'column',
+  },
+  item: {
+    padding: 15,
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: '#d6d7da',
+    borderBottomWidth: 1,
+    borderBottomColor: 'whitesmoke',
   },
-  boxSmall: {
-    width: 50,
-    height: 50,
-    marginTop: 10,
-    marginBottom: 10,
-    backgroundColor: 'orange',
+  rightSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  remove: {
+    marginLeft: 10,
+    marginBottom: 2,
+    color: '#CD5C5C',
+    fontSize: 26,
+  },
+  completed: {
+    backgroundColor: 'whitesmoke',
   },
 })
 
 export default class List extends Component {
 
-  render() {
+  static propTypes = {
+    items: PropTypes.array.isRequired,
+    onRemoveItem: PropTypes.func.isRequired,
+    onToggleItemCompleted: PropTypes.func.isRequired,
+  }
+
+  renderItem = (item, i) => {
+    const {onToggleItemCompleted, onRemoveItem} = this.props
+    const itemStyle = item.completed ? [styles.item, styles.completed] : styles.item
+
     return (
-      <ScrollView contentContainerStyle={styles.listContainer}>
-        <View style={styles.boxSmall} />
-        <View style={styles.boxSmall} />
-        <View style={styles.boxSmall} />
-        <View style={styles.boxSmall} />
-        <View style={styles.boxSmall} />
+      <View key={i} style={itemStyle}>
+        <Text> {item.label} </Text>
+        <View style={styles.rightSection}>
+          <Checkbox
+            isChecked={item.completed}
+            onToggle={() => onToggleItemCompleted(i)}
+          />
+          <TouchableOpacity onPress={() => onRemoveItem(i)}>
+            <Text style={styles.remove}> &times; </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    )
+  }
+
+  render() {
+    const {items} = this.props
+
+    return (
+      <ScrollView style={styles.listContainer}>
+        {items.map(this.renderItem)}
       </ScrollView>
     )
   }
